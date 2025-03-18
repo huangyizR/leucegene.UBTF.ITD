@@ -1,0 +1,22 @@
+#!/bin/bash
+
+#SBATCH --export=NONE
+#SBATCH -J slice.UBTF.03H109
+#SBATCH -o /varidata/research/projects/triche/Peter/leucegene/report/slice.UBTF.03H109.o
+#SBATCH -e /varidata/research/projects/triche/Peter/leucegene/report/slice.UBTF.03H109.e
+#SBATCH --ntasks 1
+#SBATCH --time 2:00:00
+#SBATCH --mem=150G
+
+BAM_DIR="/varidata/research/projects/triche/Peter/leucegene/BAM/GSE67040_all_temp/slice/genome"
+cd $BAM_DIR
+GENOMIC_REGION="/varidata/research/projects/triche/Peter/leucegene/boardScan/detectUBTFbySCreads/ubtf_genomic.bed"
+
+sliced_genomic_DIR="/varidata/research/projects/triche/Peter/leucegene/boardScan/detectUBTFbySCreads/BAM"
+
+# genomic
+samtools view -@ 20 --regions-file $GENOMIC_REGION -o $sliced_genomic_DIR/leucegene.03H109.RNASeq.genomic.ubtf.bam  -Pbh leucegene.03H109.RNASeq.genomic.sliced.sorted.bam 
+
+samtools sort  -m 3G -@ 20 -o $sliced_genomic_DIR/leucegene.03H109.RNASeq.genomic.ubtf.sorted.bam $sliced_genomic_DIR/leucegene.03H109.RNASeq.genomic.ubtf.bam
+samtools index -@ 20 $sliced_genomic_DIR/leucegene.03H109.RNASeq.genomic.ubtf.sorted.bam
+

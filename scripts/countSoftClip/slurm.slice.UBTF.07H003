@@ -1,0 +1,21 @@
+#!/bin/bash
+
+#SBATCH --export=NONE
+#SBATCH -J softclip.UBTF.07H003
+#SBATCH -o /varidata/research/projects/triche/Peter/leucegene/report/softclip.UBTF.07H003.o
+#SBATCH -e /varidata/research/projects/triche/Peter/leucegene/report/softclip.UBTF.07H003.e
+#SBATCH --ntasks 1
+#SBATCH --time 2:00:00
+#SBATCH --mem=150G
+
+softclip_genomic_DIR="/varidata/research/projects/triche/Peter/leucegene/boardScan/detectUBTFbySCreads/softclipBAM"
+sliced_genomic_DIR="/varidata/research/projects/triche/Peter/leucegene/boardScan/detectUBTFbySCreads/BAM"
+readNames_DIR="/varidata/research/projects/triche/Peter/leucegene/boardScan/detectUBTFbySCreads/readNames"
+
+samtools view -h $sliced_genomic_DIR/leucegene.07H003.RNASeq.genomic.ubtf.sorted.bam | awk '$1 ~ /^@/ || $6 ~ /S/' | samtools view -Sb - > $softclip_genomic_DIR/leucegene.07H003.RNASeq.genomic.ubtf.sorted.softclip.bam
+samtools sort -m 3G -@ 20 -o  $softclip_genomic_DIR/leucegene.07H003.RNASeq.genomic.ubtf.sorted.softclip.sorted.bam   $softclip_genomic_DIR/leucegene.07H003.RNASeq.genomic.ubtf.sorted.softclip.bam
+samtools index $softclip_genomic_DIR/leucegene.07H003.RNASeq.genomic.ubtf.sorted.softclip.sorted.bam
+
+samtools view $softclip_genomic_DIR/leucegene.07H003.RNASeq.genomic.ubtf.sorted.softclip.sorted.bam  | cut -f1 | sort -u > $readNames_DIR/07H003.ubtf.softclip.readNames
+samtools view $sliced_genomic_DIR/leucegene.07H003.RNASeq.genomic.ubtf.sorted.bam | cut -f1 | sort -u > $readNames_DIR/07H003.ubtf.readNames
+
